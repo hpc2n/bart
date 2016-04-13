@@ -41,7 +41,7 @@ CONFIG = {
             MAX_DAYS:          { 'required': False, type: 'int' },
           }
 
-COMMAND = 'sacct --allusers --parsable2 --format=JobID,UID,Partition,Submit,Start,End,Account,Elapsed,UserCPU,AllocCPUS,Nodelist --state=ca,cd,f,nf,to --starttime="%s" --endtime="%s"'
+COMMAND = 'sacct --allusers --parsable2 --format=JobID,UID,Partition,Submit,Start,End,Account,Elapsed,UserCPU,AllocCPUS,Nodelist,CPUTimeRAW --state=ca,cd,f,nf,to --starttime="%s" --endtime="%s"'
 
 class SlurmBackend:
     """
@@ -79,8 +79,7 @@ class SlurmBackend:
     def getNextLogEntry(self):
 
         try:
-            entry = self.results.pop(0)
-            return entry[:-1].split('|')
+            return self.results.pop(0).split('|')
         except IndexError:
             return None
 
@@ -152,8 +151,17 @@ class Slurm:
         account_name = log_entry[6]
         utilized_cpu = common.getSeconds(log_entry[8])
         wall_time    = common.getSeconds(log_entry[7])
-        core_count   = log_entry[9]
+        core_count   = int(log_entry[9])
         hosts        = self.getNodes(log_entry[10])
+        cpu_time_raw = long(log_entry[11])
+
+        calc_core_count = core_count
+        if wall_time > 0:
+            calc_core_count = long(cpu_time_raw / wall_time)
+
+        if cpu_time_raw != wall_time * core_count and core_count < calc_core_count:
+            logging.info('Bug/Feature in slurm < 15.08: wrong core_count recalculating. Old core_count: %d, new core_count: %d' % (core_count, calc_core_count))
+            core_count = calc_core_count
 
         # clean data and create various composite entries from the work load trace
         job_identifier = job_id
