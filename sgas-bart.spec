@@ -1,6 +1,6 @@
 %define name sgas-bart
-%define version 008-sams-20160413
-%define release 1
+%define version 008
+%define release sams-20160413
 
 Summary: SGAS Batch system Reporting Tool
 Name: %{name}
