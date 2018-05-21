@@ -41,7 +41,7 @@ CONFIG = {
             MAX_DAYS:          { 'required': False, type: 'int' },
           }
 
-COMMAND = 'sacct --allusers --parsable2 --format=JobID,UID,Partition,Submit,Start,End,Account,Elapsed,UserCPU,AllocCPUS,Nodelist,CPUTimeRAW --state=ca,cd,f,nf,to --starttime="%s" --endtime="%s"'
+COMMAND = 'sacct --allusers --parsable2 --format=JobIDRaw,UID,Partition,Submit,Start,End,Account,Elapsed,UserCPU,AllocCPUS,Nodelist,CPUTimeRAW --state=ca,cd,f,nf,to --starttime="%s" --endtime="%s"'
 
 class SlurmBackend:
     """
