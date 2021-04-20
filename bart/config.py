@@ -9,7 +9,10 @@
 
 import re
 import os
-import ConfigParser
+try:
+    import ConfigParser
+except ImportError:
+    import configparser as ConfigParser
 import logging
 from optparse import OptionParser
 
@@ -36,7 +39,7 @@ STDERR_LEVEL = 'stderr_level'
 STATEDIR   = 'statedir'
 SUPPRESS_USERMAP_INFO = 'suppress_usermap_info'
 
-VALID_LOGLEVELS = ('DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL')
+VALID_LOGLEVELS = {'DEBUG': logging.DEBUG, 'INFO': logging.INFO, 'WARNING': logging.WARNING, 'ERROR': logging.ERROR, 'CRITICAL': logging.CRITICAL}
 
 # regular expression for matching mapping lines
 rx = re.compile('''\s*(.*)\s*"(.*)"''')
@@ -51,6 +54,8 @@ def getParser():
 
 class BartConfig:
     def __init__(self,config_file):
+
+        self.config_file = config_file
 
         if not os.path.exists(config_file):
             raise IOError('Configuration file %s does not exist\n' % config_file)
@@ -89,6 +94,16 @@ class BartConfig:
             return False
 
         return False;
+
+
+    def getLoglevel(self):
+        s = self.getConfigValue(SECTION_COMMON, LOGLEVEL, DEFAULT_LOG_LEVEL)
+
+        if s not in VALID_LOGLEVELS:
+            raise ValueError("Unknown loglevel '%s' in config file %s\nValid log elevels are %s\n" %
+                             (s, self.config_file, ', '.join(VALID_LOGLEVELS)))
+        return VALID_LOGLEVELS[s] 
+        
        
     # Check for missing items and check syntax
     def validate(self,section,lrms):
@@ -99,25 +114,25 @@ class BartConfig:
             value = self.getConfigValue(section, key, None) 
             if value == None:
                 if item['required'] == True:
-                    print "Required Value '%s' is missing in section [%s]" % (key,section)
+                    print("Required Value '%s' is missing in section [%s]" % (key,section))
                     return False
             else:
                 # check if value is of correct type                
                 if 'type' in item and item['type'] in ['bool'] and value not in ['true','false','0','1','yes','no']:
-                    print "Item '%s' defined as 'bool' in section [%s] does not have a valid syntax" % (key,section)
+                    print("Item '%s' defined as 'bool' in section [%s] does not have a valid syntax" % (key,section))
                     return False
                 
                 if 'type' in item and item['type'] in ['int']:
                     try:
                             int(value)
                     except ValueError:                    
-                        print "Item '%s' defined as 'bool' in section [%s] does not have a valid syntax" % (key,section)
+                        print("Item '%s' defined as 'bool' in section [%s] does not have a valid syntax" % (key,section))
                         return False
                                     
         # Check for items not corresponding with the section
         for item in self.cfg.items(section):
             if item[0] not in lrms.CONFIG:
-                print "Value '%s' found but not defiend in section [%s]" % (item[0] + "=" + item[1], section)
+                print("Value '%s' found but not defiend in section [%s]" % (item[0] + "=" + item[1], section))
                 return False                 
                 
         return True
