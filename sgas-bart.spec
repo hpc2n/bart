@@ -14,7 +14,7 @@ Prefix: %{_prefix}
 BuildArch: noarch
 Vendor: Magnus Jonsson <magnus@hpc2n.umu.se>
 Url: http://www.sgas.se/
-Requires: python-twisted-core, python-twisted-web, pyOpenSSL, python-dateutil
+Requires: python-twisted-core, pyOpenSSL, python-dateutil
 
 %description
 Tool for generating usage records from LRMS logs and registering the records to SGAS.
