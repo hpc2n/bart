@@ -42,7 +42,7 @@ account_filter=^.*-lm$
 
 account_map: default=none
 Mapping from slurm account names to the upstream name, i.e. the
-usagerecord receiving entiry, for instance SUPR.
+usagerecord receiving entity, for instance SUPR.
 A python list expression with dictionary elements. The dictionary
 elements must contain two key/value pairs, 'regex', and 'replace'. For
 example list this (and it can be multiline like in this example):
