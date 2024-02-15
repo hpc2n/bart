@@ -189,10 +189,10 @@ class Slurm:
                         map_ok = False
                     else:
                         if 'regex' not in d:
-                            logging.error('ACCOUNT_MAP item in config file lacks a 'regex' key: %s' % d)
+                            logging.error('ACCOUNT_MAP item in config file lacks a "regex" key: %s' % d)
                             map_ok = False
                         if 'replace' not in d:
-                            logging.error('ACCOUNT_MAP item in config file lacks a 'replace' key: %s' % d)
+                            logging.error('ACCOUNT_MAP item in config file lacks a "replace" key: %s' % d)
                             map_ok = False
         if not map_ok:
             sys.stderr.write('ACCOUNT_MAP in config is incorrectly defined. See the documentation for how to defined it.')
