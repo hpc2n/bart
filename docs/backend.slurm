@@ -34,3 +34,19 @@ If Slurm TRESWeights are used, one typically want to use the "billing" field her
 charge_scale: default=1.0
 Slurm only allows for integer values in "billing", thus you may have needed to scale it up tresweights.
 The reported charge value will be multiplied by this scale.
+
+account_filter: default=none
+A python regex to filter on specific accounts from the sacct output.
+Example, note that there are no ' or " around this:
+account_filter=^.*-lm$
+
+account_map: default=none
+Mapping from slurm account names to the upstream name, i.e. the
+usagerecord receiving entiry, for instance SUPR.
+A python list expression with dictionary elements. The dictionary
+elements must contain two key/value pairs, 'regex', and 'replace'. For
+example list this (and it can be multiline like in this example):
+account_map=[
+    {'regex': r'-(lm|gpu)$', 'replace': ''},
+    {'regex': r'^snic(\d+)-(\d+)-(\d+)$', 'replace': r'SNIC \1/\2-\3'},
+  ]

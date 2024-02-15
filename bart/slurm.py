@@ -7,6 +7,7 @@
 # Author: Magnus Jonsson <magnus@hpc2n.umu.se>
 # Copyright: Nordic Data Grid Facility (2010)
 
+import ast
 import os
 import time
 import datetime
@@ -51,6 +52,14 @@ DEFAULT_CHARGE_SCALE = 1.
 USERS = 'users'
 USERS_DEFAULT = None
 
+# Filter on account
+ACCOUNT_FILTER = 'account_filter'
+DEFAULT_ACCOUNT_FILTER = None
+
+# Map account name
+ACCOUNT_MAP = 'account_map'
+ACCOUNT_MAP_DEFAULT = None
+
 CONFIG = {
             STATEFILE:         { 'required': False },
             STATEFILE_DEFAULT: { 'required': False, type: 'int' },
@@ -60,6 +69,8 @@ CONFIG = {
             CHARGE_UNIT:       { 'required': False },
             CHARGE_SCALE:      { 'required': False, type: 'float' },
             USERS:             { 'required': False },
+            ACCOUNT_FILTER:    { 'required': False },
+            ACCOUNT_MAP:       { 'required': False },
           }
 
 COMMAND = 'sacct %(users)s --duplicates --parsable2 --format=JobIDRaw,User,Partition,Submit,Start,End,Account,Elapsed,UserCPU,AllocTRES,Nodelist,NNodes --state=%(states)s --starttime="%(starttime)s" --endtime="%(endtime)s"'
@@ -158,6 +169,34 @@ class Slurm:
         self.processors_unit = cfg.getConfigValue(SECTION, PROCESSORS_UNIT, DEFAULT_PROCESSORS_UNIT)
         self.charge_unit = cfg.getConfigValue(SECTION, CHARGE_UNIT, DEFAULT_CHARGE_UNIT)
         self.charge_scale = cfg.getConfigValue(SECTION, CHARGE_SCALE, DEFAULT_CHARGE_SCALE)
+        self.account_filter = cfg.getConfigValue(SECTION, ACCOUNT_FILTER, DEFAULT_ACCOUNT_FILTER)
+        self.account_map = cfg.getConfigValue(SECTION, ACCOUNT_MAP, ACCOUNT_MAP_DEFAULT)
+        self.account_rx = None
+        if self.account_filter:
+            self.account_rx = re.compile(self.account_filter)
+        self.account_map_list = None
+        map_ok = True
+        if self.account_map:
+            self.account_map_list = ast.literal_eval(self.account_map)
+            # Make sure its really a list and that each entry is really a dict
+            if not isinstance(self.account_map_list, list):
+                logging.error('ACCOUNT_MAP in config file is not a list: %s' % self.account_map)
+                map_ok = False
+            else:
+                for d in self.account_map_list:
+                    if not isinstance(d, dict):
+                        logging.error('ACCOUNT_MAP item in config file is not a dict: %s' % d)
+                        map_ok = False
+                    else:
+                        if 'regex' not in d:
+                            logging.error('ACCOUNT_MAP item in config file lacks a 'regex' key: %s' % d)
+                            map_ok = False
+                        if 'replace' not in d:
+                            logging.error('ACCOUNT_MAP item in config file lacks a 'replace' key: %s' % d)
+                            map_ok = False
+        if not map_ok:
+            sys.stderr.write('ACCOUNT_MAP in config is incorrectly defined. See the documentation for how to defined it.')
+            sys.exit(1)
 
     def getStateFile(self):
         return self.cfg.getConfigValue(SECTION, STATEFILE, DEFAULT_STATEFILE)
@@ -315,6 +354,27 @@ class Slurm:
 
         return ur
 
+    def filter_on_account(self, account):
+        """
+        Filter on account
+        """
+        ret = True
+        if self.account_rx:
+            if not self.account_rx.match(account):
+                ret = False
+
+        return ret
+
+    def rewrite_account_name(self, account_name):
+        """
+        Rewrite account name
+        """
+        if self.account_map_list:
+            for d in self.account_map_list:
+                account_name = re.sub(d['regex'], d['replace'], account_name)
+
+        return account_name
+
     def generateUsageRecords(self, hostname, user_map, project_map):
         """
         Starts the UR generation process.
@@ -334,11 +394,13 @@ class Slurm:
             if log_entry is None:
                 break # no more log entries
 
-            ur = self.createUsageRecord(log_entry, hostname, user_map, project_map)
-            
-            if ur is not None: 
-                common.writeUr(ur,self.cfg)            
-                count = count + 1
+            if self.filter_on_account(log_entry[6]):
+                log_entry[6] = self.rewrite_account_name(log_entry[6])
+                ur = self.createUsageRecord(log_entry, hostname, user_map, project_map)
+                
+                if ur is not None: 
+                    common.writeUr(ur,self.cfg)            
+                    count = count + 1
             
         # only update state if a entry i written
         if count > 0:
