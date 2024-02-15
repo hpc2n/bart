@@ -1,12 +1,14 @@
 Source: sgas-bart
-Maintainer: Magnus Jonsson <magnus@hpc2n.umu.se>
+Maintainer: Åke Sandgren <ake@hpc2n.umu.se>
 Section: python
 Priority: optional
-Build-Depends: python (>= 2.6.5), debhelper (>= 7.4.3)
+Build-Depends: python3 (>= 3.8), debhelper (>= 12), dh-python
 Standards-Version: 3.9.1
 
 Package: sgas-bart
 Architecture: all
-Depends: ${misc:Depends}, python (>= 2.6.5), python-twisted-core (>= 10.0.0), python-openssl (>= 0.10), python-dateutil (>= 1.4.1)
+Depends: ${misc:Depends}, python3 (>= 3.8), python3-twisted, python3-openssl, python3-dateutil
+Replaces: python3-sgas-bart (<= 008-sams-20221101-1)
+Conflicts: python3-sgas-bart (<= 008-sams-20221101-1)
 Description: SGAS Batch system Reporting Tool
 

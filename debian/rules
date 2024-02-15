@@ -1,7 +1,4 @@
 #!/usr/bin/make -f
 
 %:
-	# for precise
-	# dh $@ --with python2 --buildsystem=python_distutils
-	# for lucid (might also work with precise)
-	dh $@ 
+	dh $@ --buildsystem=pybuild

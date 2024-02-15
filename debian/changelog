@@ -1,3 +1,9 @@
+sgas-bart (008-hpc2n0.1) focal; urgency=medium
+
+  * Added account filter and map functionality
+
+ -- Åke Sandgren <ake@hpc2n.umu.se>  Thu, 15 Feb 2024 10:54:51 +0100
+
 sgas-bart (007-1) unstable; urgency=low
 
   * se Changelog for changes...
