@@ -57,6 +57,7 @@ setup(name='sgas-bart',
       packages=['bart','bart.usagerecord',
                     'bart.ext', 'bart.ext.isodate'],
       scripts = ['bart-logger', 'bart-registrant'],
+      install_requires = ['requests'],
       cmdclass = cmdclasses,
 
       data_files = [
