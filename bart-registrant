@@ -60,7 +60,7 @@ DEFAULT_CONFIG_FILE = "/etc/bart/bart.conf"
 DEFAULT_LOGFILE = "/var/log/bart-registration.log"
 DEFAULT_HOSTKEY = "/etc/grid-security/hostkey.pem"
 DEFAULT_HOSTCERT = "/etc/grid-security/hostcert.pem"
-DEFAULT_CERTDIR = "/etc/grid-security/certificates"
+DEFAULT_CERTDIR = None
 DEFAULT_LOG_DIR = "/var/spool/bart/usagerecords/"
 DEFAULT_BATCH_SIZE = 100
 DEFAULT_TIMEOUT = "10,"
@@ -257,7 +257,6 @@ def httpRequest(url, method="GET", payload=None, ctxFactory=None, timeout=None):
     """
     params = {
         "timeout": timeout,
-        "verify": False,
     }
     if ctxFactory:
         params["cert"] = (ctxFactory.cert_path, ctxFactory.key_path)
