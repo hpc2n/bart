@@ -7,8 +7,8 @@
 # Author: Henrik Thostrup Jensen <htj@ndgf.org>
 # Copyright: Nordic Data Grid Facility (2009, 2010)
 
+import importlib.metadata
 import time
-from bart import __version__
 
 from bart.usagerecord import urelements as ur
 
@@ -25,7 +25,10 @@ XML_HEADER         = b'''<?xml version="1.0" encoding="UTF-8" ?>''' + b"\n"
 
 # values for the logger name + version
 LOGGER_NAME_VALUE    = 'SGAS-BaRT'
-LOGGER_VERSION_VALUE = __version__
+try:
+    LOGGER_VERSION_VALUE = importlib.metadata.version("sgas-bart")
+except importlib.metadata.PackageNotFoundError:
+    LOGGER_VERSION_VALUE = "unknown"
 
 # register namespaces in element tree so we get more readable xml files
 # the semantics of the xml files does not change due to this

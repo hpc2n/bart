@@ -3,7 +3,10 @@ from distutils.core import setup
 from distutils.command.install import install
 from distutils.command.install_data import install_data
 
-from bart import __version__
+import time
+gmt = time.gmtime()
+
+version = '%04d%02d%02d' % (gmt.tm_year, gmt.tm_mon, gmt.tm_mday)
 
 
 # nasty global for relocation
@@ -49,7 +52,7 @@ cmdclasses = {'install': InstallBart, 'install_data': InstallDataBart}
 
 
 setup(name='sgas-bart',
-      version=__version__,
+      version=version,
       description='SGAS Batch system Reporting Tool',
       author='Henrik Thostrup Jensen / Magnus Jonsson',
       author_email='magnus@hpc2n.umu.se',

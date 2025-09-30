@@ -1,0 +1,4 @@
+# Just enough pyproject.toml to allow building without distutils.
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
