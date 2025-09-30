@@ -90,14 +90,17 @@ def versioncmp(a, b):
     aa = [ int(x) for x in re.findall(r"\d+", a) ]
     bb = [ int(x) for x in re.findall(r"\d+", b) ]
 
-    for i in range(min(len(aa), len(bb))):
+    a_length = len(aa)
+    b_length = len(bb)
+
+    for i in range(min(a_length, b_length)):
         if aa[i] < bb[i]:
             return -1
         elif aa[i] > bb[i]:
             return 1
 
     ## If we get here, all common components are equal. Decide by the number of components:
-    return cmp(a_length, b_length)
+    return (a_length > b_length) - (a_length < b_length)
 
 
 class SlurmBackend:
