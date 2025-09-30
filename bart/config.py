@@ -22,7 +22,7 @@ DEFAULT_VOMAP_FILE      = '/etc/bart/vomap'
 DEFAULT_LOG_FILE        = '/var/log/bart-logger.log'
 DEFAULT_LOG_DIR         = '/var/spool/bart/usagerecords'
 DEFAULT_STATEDIR        = '/var/spool/bart'
-DEFAULT_SUPPRESS_USERMAP_INFO = 'false'
+DEFAULT_SUPPRESS_USERMAP_INFO = 'true'
 DEFAULT_LOG_LEVEL       = 'INFO'
 DEFAULT_STDERR_LEVEL    = None
 
