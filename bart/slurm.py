@@ -30,7 +30,7 @@ IDTIMESTAMP = 'idtimestamp'
 DEFAULT_IDTIMESTAMP = 'true'
 
 MAX_DAYS = 'max_days'
-MAX_DAYS_DEFAULT = 7
+MAX_DAYS_DEFAULT = 0
 
 # This fills in the "processors" field.
 PROCESSORS_UNIT         = 'processors_unit'
@@ -321,7 +321,11 @@ class Slurm:
         """
         self.missing_user_mappings = {}
 
-        tlp = SlurmBackend(self.state, int(self.cfg.getConfigValue(SECTION, MAX_DAYS, MAX_DAYS_DEFAULT)), self.cfg.getConfigValue(SECTION, USERS, USERS_DEFAULT))
+        max_days = int(self.cfg.getConfigValue(SECTION, MAX_DAYS, MAX_DAYS_DEFAULT))
+        if max_days == 0:
+            max_days = (datetime.datetime.now() - datetime.datetime.strptime(self.state, "%Y-%m-%dT%H:%M:%S")).days + 1
+
+        tlp = SlurmBackend(self.state, max_days, self.cfg.getConfigValue(SECTION, USERS, USERS_DEFAULT))
         
         count = 0
         while True:

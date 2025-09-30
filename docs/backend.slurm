@@ -20,8 +20,8 @@ idtimestamp: default=true
 Adds a timestamp to the recordid to be sure that recordid is unique if Slurm
 reuses the jobid.
 
-max_days: default=7
-Max number of days to process for every run of bart.
+max_days: default=0
+Max number of days to process for every run of bart, or 0 for number of days since last run.
 
 processors_unit: default=cpu
 Which element of the AllocTRES should be used as the PROCESSORS ("number of
