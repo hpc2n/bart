@@ -6,19 +6,19 @@
 # Author: Magnus Jonsson <magnus@hpc2n.umu.se>
 # Copyright: NeIC 2014
 
-
+import logging
 from bart.usagerecord import urparser
 
-from twisted.python import log
+logger = logging.getLogger(__name__)
 
 def verify(ur):
     try:
         d = urparser.xmlToDict(ur)
         if d['record_id'] is None:
-            log.err("No record_id found")
+            logger.error("No record_id found")
             return False
     except:
-        log.err("Failed to convert UR XML into dict")
+        logger.error("Failed to convert UR XML into dict")
         return False
     return True
 
